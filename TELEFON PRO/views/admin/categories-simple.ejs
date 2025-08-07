@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategori Yönetimi - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block admin-sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5 class="text-white">
+                            <i class="fas fa-mobile-alt me-2"></i>
+                            GaziTech Mobile
+                        </h5>
+                        <small class="text-muted">Admin Panel</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/products">
+                                <i class="fas fa-box"></i>
+                                Ürün Yönetimi
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/products/new">
+                                <i class="fas fa-plus-circle"></i>
+                                Ürün Ekle
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/categories">
+                                <i class="fas fa-tags"></i>
+                                Kategoriler
+                            </a>
+                        </li>
+                        
+                        <hr class="border-secondary">
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                Siteyi Görüntüle
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Çıkış Yap
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Kategori Yönetimi</h1>
+                                    <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                        <i class="fas fa-plus me-2"></i>
+                        Yeni Kategori Ekle
+                    </button>
+                </div>
+                </div>
+                
+                <!-- Flash Messages -->
+                <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <%= Array.isArray(success) ? success[0] : success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <%= Array.isArray(error) ? error[0] : error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- Kategori Listesi -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tags me-2"></i>
+                            Kategori Listesi (<%= categories.length %> kategori)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (categories && categories.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Resim</th>
+                                            <th>Kategori Adı</th>
+                                            <th>Açıklama</th>
+                                            <th>Oluşturma Tarihi</th>
+                                            <th width="150">İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% categories.forEach(category => { %>
+                                            <tr>
+                                                <td><%= category.id %></td>
+                                                <td>
+                                                    <% if (category.image_url) { %>
+                                                        <img src="<%= category.image_url %>" 
+                                                             alt="<%= category.name %>" 
+                                                             class="category-thumbnail"
+                                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                                                    <% } else { %>
+                                                        <div class="category-icon-placeholder" style="width: 50px; height: 50px; background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                                            <i class="fas fa-image text-muted"></i>
+                                                        </div>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <strong><%= category.name %></strong>
+                                                </td>
+                                                <td>
+                                                    <% if (category.description) { %>
+                                                        <%= category.description.length > 50 ? category.description.substring(0, 50) + '...' : category.description %>
+                                                    <% } else { %>
+                                                        <span class="text-muted">Açıklama yok</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted">
+                                                        <%= category.created_at ? new Date(category.created_at).toLocaleDateString('tr-TR') : '-' %>
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="/kategori/<%= category.id %>" 
+                                                           target="_blank" 
+                                                           class="btn btn-outline-info" 
+                                                           title="Kategorideki ürünleri görüntüle">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        
+                                                        <button type="button" 
+                                                                class="btn btn-outline-warning" 
+                                                                title="Düzenle"
+                                                                data-category-id="<%= category.id %>"
+                                                                onclick="editCategory(<%= category.id %>)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        
+                                                        <form method="POST" 
+                                                              action="/admin/categories/delete/<%= category.id %>" 
+                                                              class="d-inline"
+                                                              onsubmit="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')">
+                                                            <button type="submit" 
+                                                                    class="btn btn-outline-danger" 
+                                                                    title="Sil">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-tags text-muted mb-3" style="font-size: 4rem;"></i>
+                                <h4 class="text-muted">Henüz kategori eklenmemiş</h4>
+                                <p class="text-muted">İlk kategorinizi ekleyerek başlayın!</p>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                    <i class="fas fa-plus me-2"></i>
+                                    İlk Kategoriyi Ekle
+                                </button>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Kategori Ekleme Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus me-2"></i>
+                        Yeni Kategori Ekle
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="/admin/categories" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Kategori Adı *</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="categoryName" 
+                                   name="name" 
+                                   required
+                                   placeholder="Örn: Telefon Aksesuarları">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="categoryDescription" class="form-label">Açıklama</label>
+                            <textarea class="form-control" 
+                                      id="categoryDescription" 
+                                      name="description" 
+                                      rows="3"
+                                      placeholder="Kategori hakkında kısa açıklama..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="categoryImage" class="form-label">Kategori Resmi</label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="categoryImage" 
+                                   name="image" 
+                                   accept="image/*"
+                                   onchange="previewImage(this, 'addPreview')">
+                            <div class="form-text">JPG, PNG veya WEBP formatında resim yükleyebilirsiniz. (Maksimum 5MB)</div>
+                            <div id="addPreview" class="mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Kategoriyi Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kategori Düzenleme Modal -->
+    <div class="modal fade" id="editCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Kategori Düzenle
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="editCategoryForm" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editCategoryName" class="form-label">Kategori Adı *</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="editCategoryName" 
+                                   name="name" 
+                                   required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="editCategoryDescription" class="form-label">Açıklama</label>
+                            <textarea class="form-control" 
+                                      id="editCategoryDescription" 
+                                      name="description" 
+                                      rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Mevcut Resim</label>
+                            <div id="currentImagePreview" class="mb-2"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="editCategoryImage" class="form-label">Yeni Resim Yükle</label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="editCategoryImage" 
+                                   name="image" 
+                                   accept="image/*"
+                                   onchange="previewImage(this, 'editPreview')">
+                            <div class="form-text">Yeni resim yüklerseniz mevcut resim değiştirilir. Boş bırakırsanız mevcut resim korunur.</div>
+                            <div id="editPreview" class="mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    // Resim önizleme fonksiyonu
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        preview.innerHTML = '';
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // Dosya boyutu kontrolü (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Dosya boyutu 5MB\'dan büyük olamaz!');
+                input.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '200px';
+                img.style.maxHeight = '150px';
+                img.style.borderRadius = '8px';
+                img.style.border = '1px solid #dee2e6';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    // Basit kategori düzenleme fonksiyonu
+    function editCategory(id) {
+        const button = document.querySelector(`[data-category-id="${id}"]`);
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+        
+        fetch(`/admin/categories/edit/${id}`)
+            .then(response => response.json())
+            .then(category => {
+                // Form alanlarını doldur
+                document.getElementById('editCategoryName').value = category.name || '';
+                document.getElementById('editCategoryDescription').value = category.description || '';
+                
+                // Mevcut resmi göster
+                const currentImagePreview = document.getElementById('currentImagePreview');
+                currentImagePreview.innerHTML = '';
+                
+                if (category.image_url) {
+                    const img = document.createElement('img');
+                    img.src = category.image_url;
+                    img.style.maxWidth = '200px';
+                    img.style.maxHeight = '150px';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '1px solid #dee2e6';
+                    currentImagePreview.appendChild(img);
+                } else {
+                    currentImagePreview.innerHTML = '<p class="text-muted">Mevcut resim yok</p>';
+                }
+                
+                // Form action güncelle
+                document.getElementById('editCategoryForm').action = `/admin/categories/edit/${id}`;
+                
+                // Önizleme temizle
+                document.getElementById('editPreview').innerHTML = '';
+                document.getElementById('editCategoryImage').value = '';
+                
+                // Modal aç
+                const modal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Kategori bilgileri yüklenirken hata oluştu!');
+            })
+            .finally(() => {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-edit"></i>';
+                }
+            });
+    }
+    </script>
+</body>
+</html>

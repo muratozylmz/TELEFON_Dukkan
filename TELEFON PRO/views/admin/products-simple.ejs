@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Yönetimi - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block admin-sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5 class="text-white">
+                            <i class="fas fa-mobile-alt me-2"></i>
+                            GaziTech Mobile
+                        </h5>
+                        <small class="text-muted">Admin Panel</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/products">
+                                <i class="fas fa-box"></i>
+                                Ürün Yönetimi
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/products/new">
+                                <i class="fas fa-plus-circle"></i>
+                                Ürün Ekle
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/categories">
+                                <i class="fas fa-tags"></i>
+                                Kategoriler
+                            </a>
+                        </li>
+                        
+                        <hr class="border-secondary">
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                Siteyi Görüntüle
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Çıkış Yap
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Ürün Yönetimi</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="/admin/products/new" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>
+                            Yeni Ürün Ekle
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Flash Messages -->
+                <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <%= Array.isArray(success) ? success[0] : success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+                
+                <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <%= Array.isArray(error) ? error[0] : error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- Ürün Listesi -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-box me-2"></i>
+                            Ürün Listesi (<%= products.length %> ürün)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (products && products.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th width="80">Resim</th>
+                                            <th>Ürün</th>
+                                            <th>Kategori</th>
+                                            <th>Fiyat</th>
+                                            <th>Stok</th>
+                                            <th width="200">İşlemler</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% products.forEach(product => { %>
+                                            <tr>
+                                                <td>
+                                                    <% if (product.image_url) { %>
+                                                        <img src="<%= product.image_url %>" 
+                                                             alt="<%= product.name %>" 
+                                                             class="rounded"
+                                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <% } else { %>
+                                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                                             style="width: 50px; height: 50px;">
+                                                            <i class="fas fa-image text-muted"></i>
+                                                        </div>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <strong><%= product.name %></strong>
+                                                    <% if (product.featured) { %>
+                                                        <span class="badge bg-warning ms-2">Öne Çıkan</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (product.category_name) { %>
+                                                        <span class="badge bg-secondary"><%= product.category_name %></span>
+                                                    <% } else { %>
+                                                        <span class="text-muted">-</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (product.price) { %>
+                                                        <strong class="text-success">
+                                                            ₺<%= parseFloat(product.price).toLocaleString('tr-TR', {minimumFractionDigits: 2}) %>
+                                                        </strong>
+                                                    <% } else { %>
+                                                        <span class="text-muted">-</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (product.stock > 5) { %>
+                                                        <span class="badge bg-success"><%= product.stock %></span>
+                                                    <% } else if (product.stock > 0) { %>
+                                                        <span class="badge bg-warning"><%= product.stock %></span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-danger">Yok</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="/urun/<%= product.id %>" 
+                                                           target="_blank" 
+                                                           class="btn btn-outline-info" 
+                                                           title="Görüntüle">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="/admin/products/edit/<%= product.id %>" 
+                                                           class="btn btn-outline-warning" 
+                                                           title="Düzenle">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <form method="POST" 
+                                                              action="/admin/products/delete/<%= product.id %>" 
+                                                              class="d-inline"
+                                                              onsubmit="return confirm('Bu ürünü silmek istediğinizden emin misiniz?')">
+                                                            <button type="submit" 
+                                                                    class="btn btn-outline-danger" 
+                                                                    title="Sil">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-box-open text-muted mb-3" style="font-size: 4rem;"></i>
+                                <h4 class="text-muted">Henüz hiç ürün eklenmemiş</h4>
+                                <p class="text-muted">İlk ürününüzü ekleyerek başlayın!</p>
+                                <a href="/admin/products/new" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>
+                                    İlk Ürünü Ekle
+                                </a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
