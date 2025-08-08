@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "postinstall": "npm rebuild sqlite3 --build-from-source",
     "dev": "nodemon app.js",
     "security-check": "npm audit",
     "security-fix": "npm audit fix",
@@ -42,3 +43,4 @@
   "author": "GaziTech Mobile",
   "license": "MIT"
 }
+
